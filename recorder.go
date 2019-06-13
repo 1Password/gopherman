@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/cohix/gopherman/postman"
+	"github.com/1password/gopherman/postman"
 	"github.com/pkg/errors"
 )
 
@@ -71,6 +71,14 @@ func (rr *RequestRecorder) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			postman.Response{
 				Mode:   "raw",
 				Raw:    string(fakeWriter.Body),
+				Status: fakeWriter.StatusCode,
+			},
+		}
+	} else {
+		item.Response = []postman.Response{
+			postman.Response{
+				Mode:   "raw",
+				Raw:    "",
 				Status: fakeWriter.StatusCode,
 			},
 		}

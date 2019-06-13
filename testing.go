@@ -10,7 +10,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/cohix/gopherman/postman"
+	"github.com/1password/gopherman/postman"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -96,7 +96,20 @@ func (t *Tester) TestRequestWithName(name string, tst *testing.T, handler func(*
 				return
 			}
 
-			handler(helper, &itm.Request, &itm.Response[0], actual)
+			switch {
+			case &itm.Response == nil:
+				handler(helper, &itm.Request, nil, actual)
+			case len(itm.Response) == 0:
+				handler(helper, &itm.Request, nil, actual)
+			default:
+				expected, err := (&itm.Response[0]).InflateEnvironmentVariables(vars)
+				if err != nil {
+					helper.Error(err)
+					return
+				}
+				handler(helper, &itm.Request, expected, actual)
+			}
+
 		}()
 
 		if helper.HasErrors() {
@@ -109,6 +122,20 @@ func (t *Tester) TestRequestWithName(name string, tst *testing.T, handler func(*
 	}
 
 	return nil
+}
+
+// AugmentEnvironment of the Tester with one more key value pair
+func (t *Tester) AugmentEnvironment(key string, value string, valueType string, description string, enabled bool) (*Tester, error) {
+	newValue := postman.Variable{
+		Key:         key,
+		Value:       value,
+		Type:        valueType,
+		Description: description,
+		Enabled:     enabled,
+	}
+	t.Environment.Values = append(t.Environment.Values, newValue)
+
+	return t, nil
 }
 
 func makeRequest(client *http.Client, req *http.Request) (*postman.Response, error) {
