@@ -172,7 +172,13 @@ func (r *Request) ToHTTPRequest(vars map[string]string) *http.Request {
 		tmplAddr = r.URL.Raw
 	}
 
-	req, err := http.NewRequest(r.Method, tmplAddr, bytes.NewBuffer([]byte(r.Body.Raw)))
+	tmplBody, err := SubstVars(r.Body.Raw, vars)
+	if err != nil {
+		tmplBody = r.Body.Raw
+	}
+
+	req, err := http.NewRequest(r.Method, tmplAddr, bytes.NewBuffer([]byte(tmplBody)))
+
 	if err != nil {
 		return nil
 	}
@@ -199,6 +205,21 @@ func (r *Request) ToHTTPRequest(vars map[string]string) *http.Request {
 	}
 
 	return req
+}
+
+// InflateEnvironmentVariables for the Response
+func (r *Response) InflateEnvironmentVariables(vars map[string]string) (*Response, error) {
+
+	inflatedMode, err := SubstVars(r.Mode, vars)
+	if err != nil {
+		return nil, errors.New("unable in inflate response mode")
+	}
+	inflatedRaw, err := SubstVars(r.Raw, vars)
+	if err != nil {
+		return nil, errors.New("unable in inflate response raw")
+	}
+
+	return &Response{inflatedMode, inflatedRaw, r.Status}, nil
 }
 
 // ToInterface unmarshals a response into an interface
