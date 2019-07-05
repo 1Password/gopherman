@@ -3,14 +3,14 @@ package gopherman
 import (
 	"encoding/json"
 	"fmt"
+	"gopherman/postman"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/pkg/errors"
-
-	"github.com/1password/gopherman/postman"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -58,6 +58,14 @@ func NewTesterWithCollection(path string, envFile string, files ...string) (*Tes
 	return &tester, nil
 }
 
+func removeEmptyPort(host string) string {
+	lastIndex := len(host) - 1
+	if strings.LastIndex(host, ":") == lastIndex {
+		return host[:lastIndex]
+	}
+	return host
+}
+
 // TestRequestWithName finds the named request in the collection, makes the same request, and then returns the request, expected response, and actual response
 func (t *Tester) TestRequestWithName(name string, tst *testing.T, handler func(*TestHelper, *postman.Request, *postman.Response, *postman.Response)) []error {
 	vars := t.Environment.VariableMap()
@@ -87,8 +95,8 @@ func (t *Tester) TestRequestWithName(name string, tst *testing.T, handler func(*
 				return
 			}
 
-			httpReq.URL.Host = tmplHost
-			httpReq.URL.Scheme = "http"
+			httpReq.URL.Host = removeEmptyPort(tmplHost)
+			httpReq.URL.Scheme = vars["Scheme"]
 
 			actual, err := makeRequest(t.Client, httpReq)
 			if err != nil {

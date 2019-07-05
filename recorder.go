@@ -3,6 +3,7 @@ package gopherman
 import (
 	"encoding/json"
 	"fmt"
+	"gopherman/postman"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -10,7 +11,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/1password/gopherman/postman"
 	"github.com/pkg/errors"
 )
 
