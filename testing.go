@@ -124,18 +124,20 @@ func (t *Tester) TestRequestWithName(name string, tst *testing.T, handler func(*
 	return nil
 }
 
-// AugmentEnvironment of the Tester with one more key value pair
-func (t *Tester) AugmentEnvironment(key string, value string, valueType string, description string, enabled bool) (*Tester, error) {
-	newValue := postman.Variable{
-		Key:         key,
-		Value:       value,
-		Type:        valueType,
-		Description: description,
-		Enabled:     enabled,
+// AugmentEnvironment of the Tester with one more key value pair. These are set to text with no description and as enabled.
+func (t *Tester) AugmentEnvironment(values map[string]string) *Tester {
+	for k, v := range values {
+		newValue := postman.Variable{
+			Key:         k,
+			Value:       v,
+			Type:        "text",
+			Description: "",
+			Enabled:     true,
+		}
+		t.Environment.Values = append(t.Environment.Values, newValue)
 	}
-	t.Environment.Values = append(t.Environment.Values, newValue)
 
-	return t, nil
+	return t
 }
 
 func makeRequest(client *http.Client, req *http.Request) (*postman.Response, error) {
