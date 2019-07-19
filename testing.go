@@ -125,7 +125,7 @@ func (t *Tester) TestRequestWithName(name string, tst *testing.T, handler func(*
 }
 
 // AugmentEnvironment of the Tester with one more key value pair. These are set to text with no description and as enabled.
-func (t *Tester) AugmentEnvironment(values map[string]string) *Tester {
+func (t *Tester) AugmentEnvironment(values map[string]string) {
 	for k, v := range values {
 		newValue := postman.Variable{
 			Key:         k,
@@ -137,7 +137,7 @@ func (t *Tester) AugmentEnvironment(values map[string]string) *Tester {
 		t.Environment.Values = append(t.Environment.Values, newValue)
 	}
 
-	return t
+	return
 }
 
 func makeRequest(client *http.Client, req *http.Request) (*postman.Response, error) {
