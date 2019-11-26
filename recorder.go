@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/1password/gopherman/postman"
@@ -71,9 +72,16 @@ func (rr *RequestRecorder) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Request: *req,
 	}
 
+	for headerKey, headerValues := range fakeWriter.Header() {
+		for _, headerValue := range headerValues {
+			w.Header().Set(headerKey, headerValue)
+		}
+	}
+
 	if len(fakeWriter.Body) > 0 {
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Length", strconv.Itoa(len(fakeWriter.Body)))
 		if _, err := w.Write(fakeWriter.Body); err != nil {
+			fmt.Println(err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
