@@ -66,14 +66,13 @@ func (rr *RequestRecorder) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	rr.mux.ServeHTTP(fakeWriter, r)
 
-	w.WriteHeader(fakeWriter.StatusCode)
-
 	item := postman.CollectionItem{
 		Name:    fmt.Sprintf("%s %s", r.Method, r.URL.RequestURI()),
 		Request: *req,
 	}
 
 	if len(fakeWriter.Body) > 0 {
+		w.Header().Set("Content-Type", "application/json")
 		if _, err := w.Write(fakeWriter.Body); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -94,6 +93,7 @@ func (rr *RequestRecorder) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				Status: fakeWriter.StatusCode,
 			},
 		}
+		w.WriteHeader(fakeWriter.StatusCode)
 	}
 
 	rr.reqs = append(rr.reqs, item)
