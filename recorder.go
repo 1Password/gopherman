@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/1password/gopherman/postman"
+	"github.com/1Password/gopherman/postman"
 	"github.com/pkg/errors"
 )
 

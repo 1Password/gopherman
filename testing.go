@@ -10,7 +10,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/1password/gopherman/postman"
+	"github.com/1Password/gopherman/postman"
 
 	"github.com/stretchr/testify/assert"
 )
