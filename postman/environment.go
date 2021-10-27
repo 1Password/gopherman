@@ -3,8 +3,8 @@ package postman
 import (
 	"bytes"
 	"encoding/json"
-	"html/template"
 	"io/ioutil"
+	"text/template"
 )
 
 // Environment defines an execution environment
